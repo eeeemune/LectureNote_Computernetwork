@@ -1,0 +1,54 @@
+# [컴퓨터네트워크] 34. TCP Timers (1)
+
+<aside>
+
+# 💖 TCP Timers
+
+</aside>
+
+## TCP Timers
+
+우리는 TCP에서 연결 상태나 congestion 등을 control하는 기능을 제공한다는 사실을 배웠습니다. TCP는 이런 기능을 제공하기 위해서 Timer를 사용합니다. 우리는 **이 TCP의 timer에 대해서 알아 볼 예정**입니다.
+
+## TCP Timer의 종류
+
+![image.png](%5B%E1%84%8F%E1%85%A5%E1%86%B7%E1%84%91%E1%85%B2%E1%84%90%E1%85%A5%E1%84%82%E1%85%A6%E1%84%90%E1%85%B3%E1%84%8B%E1%85%AF%E1%84%8F%E1%85%B3%5D%2034%20TCP%20Timers%20(1)%201843f66f522580ddbb2adf2ce9bfcbaf/image.png)
+
+- Retransmission Timer
+    - Error control 파트에서 배웠었던 내용이기도 합니다.
+- Persistence Timer
+- Keepalive Timer
+- TIME-WAIT
+    - 2MSL Timer라고도 합니다. TCP state에서 배운 적이 있습니다.
+
+## ⚡ Keepalive Timer
+
+<aside>
+
+**그냥 알고만 넘어가라고 하심. 크게 중요한 정보는 아니고, 서버의 메모리 자원을 어떻게 관리하는지가 중요하다고 하심**
+
+</aside>
+
+- server가 **일정 시간동안 client로부터 정보를 받지 못하면 `probe` segment**를 보내게 됩니다.
+- ‘너 아직 살아있니?’라는 의미입니다.
+- 이 `probe` segment를 10번정도를 보내도 답장이 돌아오지 않으면 죽었다고 판단합니다.
+- server는 이런 방법을 통해서 memory 자원을 관리할 수 있습니다. 통신은 하지 않으면서 server의 memory 자원만 소모하는 client를 잡아낼 수 있기 때문입니다.
+
+## ⚡ Persistance Timer
+
+### Persistance Timer의 등장 배경
+
+- Flow control을 할 때, client는 window size를 advertise하도록 되어있습니다.
+- 이 때 만약 그 **window size의 크기가 0이라면, server는 계속 대기해야만 할까요?**
+
+### 발생 시나리오
+
+1. 그러다가 server에 5만큼 빈 공간이 생겼다면, `rwnd = 5`를 보냅니다.
+2. **이 때, 이 정보가 손실되었다면?**
+    1. 이 상황이 Persistance timer가 필요한 상황입니다.
+    2. 예를 들어서, server쪽에서 recieve window가 꽉 찬 상황이라고 합시다. `rwnd = 0`을 보냅니다.
+        1. client는 그 때부터 침묵 상태가 됩니다.
+3. 일종의 **deadlock 상태가 발생하는 것**입니다.
+    1. client 입장에서는 rwnd == 0이라고 생각하므로 server가 ack를 보낼 때까지 침묵합니다.
+    2. server 입장에서는 ack를 이미 보냈고 client로부터 더이상 요청이 오지 않으므로 침묵합니다.
+    3. 이런 상황에서는 누군가 이 정적을 깨줘야 하는데, persistance timer는 그 역할을 위해 존재하는 것입니다.

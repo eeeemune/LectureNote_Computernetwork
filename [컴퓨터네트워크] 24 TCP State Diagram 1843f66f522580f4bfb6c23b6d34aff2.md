@@ -1,0 +1,114 @@
+# [컴퓨터네트워크] 24. TCP State Diagram
+
+<aside>
+
+# 💖 TCP State Diagram
+
+</aside>
+
+<aside>
+
+**이 파트가 매우매우매우 중요하다고 말씀하심. 시험에도 꼭 내실 거라고 말씀하심.**
+
+</aside>
+
+## State Transition Diagram
+
+![image.png](%5B%E1%84%8F%E1%85%A5%E1%86%B7%E1%84%91%E1%85%B2%E1%84%90%E1%85%A5%E1%84%82%E1%85%A6%E1%84%90%E1%85%B3%E1%84%8B%E1%85%AF%E1%84%8F%E1%85%B3%5D%2024%20TCP%20State%20Diagram%201843f66f522580f4bfb6c23b6d34aff2/image.png)
+
+| **CLOSED** | 연결이 한 개도 없는 상태 |
+| --- | --- |
+| **LISTEN** | Passive open 상태. SYN을 받으면 연결됨 |
+| **SYN-SENT** | SYN을 보내둠. ACK를 기다리고 있는 상태 |
+| **SYN-RCVD** | SYN+ACK를 보낸 상태. ACK를 기다리고 있는 상태 |
+| **ESTABLISHIED** | connection이 established된 상태. 데이터가 transfer 되고 있다. |
+| **FIN-WAIT-1** | FIN을 보낸 상태. |
+| **FIN-WAIT-2** | FIN+ACK를 보낸 상태 |
+| **CLOSE-WAIT** | First FIN을 받은 상태. application이 끝나기를 기다린다. |
+| **TIME-WAIT** | Second FIN을 받았고, ACK를 보낸 상태. 2MSL time out을 기다림. |
+| **LAST-ACK** | Second FIN을 보냈음. ACK를 기다림. |
+| **CLOSING** | simultaneos closing이 일어났을 때 |
+
+이 그림을 최대한 이해하라고 말씀하심.
+
+- 가운데 부분을 보면, CLOSED - LISTEN - ESTABLISHED의 흐름이 있는데 이게 three-way-handshake라고 하심.
+
+### 3-way handshake 과정
+
+<aside>
+
+**특수하지 않은, 일반적인 상태가 주어지고 그 상황에서 state transition diagram을 그릴 수 있는가? 혹은 빈칸을 채울 수 있는가?에 관한 문제가 나온다고 하심.**
+
+</aside>
+
+1. server가 passive open을 하면 CLOSED → LISTEN
+2. client가 Active open을 하면 SYN segment를 server에게 보내게 됨.
+3. client의 상태는 `SYN_SENT`로 변함.
+4. 그러면  server의 상태가 `SYN_RCVD` 상태로 변함.
+5. server가 SYN+ACK를 전송함.
+6. client가 `ESTABLISHED` 상태로 변함.
+7. client가 ACK segment를 전송함.
+8. server가 `ESTABLISHED` 상태로 변함.
+
+### 둘 중 하나가 Close를 호출했을 때
+
+1. `Close/FIN` client가 Close하고 server에게 FIN segment를 보냈을 때
+2. `FIN/ACK` client가 Close했고, server가 수동적으로 닫힐 때
+
+### 2MSL
+
+- client가 fin을 했는데도 server가 그 ack를 못 받으면 그 때부터 `TIME-WAIT` 상태에 들어감.
+- 예를 들어 60초 정도의 시간을 setting해두고, 그 시간동안은 server가 계속 물어보면 계속 답해줌
+- 문제는 이 60초동안 자원을 계속 소모하게 된다는 것
+- 이러한 상황을 `2MSL`이라고 한다.
+
+**client 종료**
+
+- 클라이언트가 먼저 Close함수를 통해 FIN을 보내준다. 클라이언트는 FIN-WAIT-1 상태가 된다.
+
+**서버에서는 FIN + ACK이 올 수도 있고(컬러선) ACK만 올 수도 있다.(흑색 실선)**
+
+**ACK만 온경우 클라이언트는 FIN-WAIT-2 상태가 되고 서버의 FIN을 기다린다.**
+
+**서버에게서 FIN이 오면 ACK을 보내어 TIME-WAIT상태로 바뀐다.**
+
+만약 FIN + ACK이 온 경우에는 FIN-WAIT-1에서 ACK을 보내고 바로 TIME-WAIT상태가 된다.
+
+위에서 TIME-WAIT 상태가 되면 2MSL만큼(대략1~2분)을 timer로 대기한다고 하였다. 대기 후 CLOSED 상태로 들어간다.
+
+**server 종료**
+
+서버는 ESTABLISHED 상태에서 클라이언트에게서 FIN이 오면, ACK을 보내주고 CLOSE-WAIT상태로 변경한다.
+
+클라이언트의 종료 과정에서 보았듯 서버가 FIN + ACK을 보내는 경우도 있는데, 이는 ACK을 보낸 시점으로부터 FIN을 보내는 간격이 상당히 짧을 경우에 그렇게 된다.
+
+서버가 CLOSE-WAIT상태에서 Close 함수를 호출하면 FIN이 전송된다. FIN이 전송되면 클라이언트로부터 마지막 ACK을 기다리는데 이 상태가 LAST ACK상태이다.
+
+LAST ACK상태에서 ACK을 받으면 CLOSED 상태가 된다.
+
+> CLOSED상태는 무엇인가
+> 
+> 
+> 클라이언트와 서버는 각각 데이터를 주고받기 위한 버퍼를 Sending / Receiving 두 개씩 가지고 있다.
+> 
+> CLOSED 상태는 이 버퍼들을 각자 다 운영체제에 반납하여 없애버린 상태를 말한다.
+> 
+
+<aside>
+
+# 💖 Reset Segment
+
+</aside>
+
+## Reset segment가 사용되는 경우
+
+<aside>
+
+**실무에서 중요해서 slide를 넣어 두셨지만 시험에는 안 내겠다고 말씀하심**
+
+</aside>
+
+1. client에서 연결을 시도했는데 server가 꺼져있는 경우
+2. FIN - FIN/ACK - ACK를 호출할 겨를도 없이 그냥 abort하고 싶은 경우
+3. 나중에 채워넣기
+4. 나중에 채워넣기
