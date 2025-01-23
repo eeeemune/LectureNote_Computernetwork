@@ -152,7 +152,7 @@
 
 - ⚡ Router
 
-### [**[컴퓨터네트워크] 16. TCP와 UDP**](https://github.com/eeeemune/LectureNote_Computernetwork/blob/main/%5B%E1%84%8F%E1%85%A5%E1%86%B7%E1%84%91%E1%85%B2%E1%84%90%E1%85%A5%E1%84%82%E1%85%A6%E1%84%90%E1%85%B3%E1%84%8B%E1%85%AF%E1%84%8F%E1%85%B3%5D%2015%20Router%201843f66f522580e08f69fe8d54b33ee1.md)
+### [**[컴퓨터네트워크] 16. TCP와 UDP**](https://github.com/eeeemune/LectureNote_Computernetwork/blob/main/%5B%E1%84%8F%E1%85%A5%E1%86%B7%E1%84%91%E1%85%B2%E1%84%90%E1%85%A5%E1%84%82%E1%85%A6%E1%84%90%E1%85%B3%E1%84%8B%E1%85%AF%E1%84%8F%E1%85%B3%5D%2016%20TCP%E1%84%8B%E1%85%AA%20UDP%201843f66f52258089a6f4dd1f53ef7644.md)
 
 - 💖 TCP와 UDP
     - TCP VS UDP
